@@ -4,7 +4,13 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // Allows requests from any domain (useful for testing)
+    methods: "GET,POST", // Allow only GET and POST requests
+    allowedHeaders: "Content-Type",
+  })
+);
 app.use(express.json());
 
 console.log("Starting server...");
