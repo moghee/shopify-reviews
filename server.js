@@ -76,6 +76,27 @@ app.post("/reviews", async (req, res) => {
   }
 });
 
+// handle helpful clicks
+app.post("/reviews/helpful", async (req, res) => {
+  const { review_id } = req.body;
+
+  try {
+    const updatedReview = await Review.findByIdAndUpdate(
+      review_id,
+      { $inc: { helpful: 1 } }, // Increment the "helpful" count
+      { new: true }
+    );
+
+    if (!updatedReview) {
+      return res.status(404).json({ error: "Review not found." });
+    }
+
+    res.json({ success: true, helpful: updatedReview.helpful });
+  } catch (err) {
+    res.status(500).json({ error: "Database error." });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
