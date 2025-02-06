@@ -35,6 +35,7 @@ const reviewSchema = new mongoose.Schema({
   customer_name: String,
   rating: Number,
   comment: String,
+  helpful: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
 });
 
