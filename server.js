@@ -98,6 +98,42 @@ app.post("/reviews/helpful", async (req, res) => {
   }
 });
 
+// conversion api
+const express = require("express");
+const axios = require("axios");
+require("dotenv").config();
+
+const app2 = express();
+
+// New API route to fetch order count
+app2.get("/order-count", async (req, res) => {
+  try {
+    const shopifyStore = process.env.oaksantum; // Your Shopify store name (e.g., "myshop")
+    const shopifyAPIKey = process.env.SHOPIFY_API_KEY; // Your Admin API access token
+
+    const response = await axios.get(
+      `https://oaksantum.myshopify.com/admin/api/2024-01/orders.json`,
+      {
+        params: {
+          status: "paid", // Only count paid orders
+          created_at_min: new Date(
+            Date.now() - 24 * 60 * 60 * 1000
+          ).toISOString(), // Last 24 hours
+        },
+        headers: {
+          "X-Shopify-Access-Token": shopifyAPIKey,
+        },
+      }
+    );
+
+    // Return the count of orders from the last 24 hours
+    res.json({ count: response.data.orders.length });
+  } catch (error) {
+    console.error("Error fetching order count:", error);
+    res.status(500).json({ error: "Failed to fetch order count" });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
