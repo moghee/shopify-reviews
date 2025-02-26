@@ -99,9 +99,8 @@ app.post("/reviews/helpful", async (req, res) => {
 });
 
 // conversion api
-const express = require("express");
+
 const axios = require("axios");
-require("dotenv").config();
 
 const app2 = express();
 
