@@ -111,7 +111,7 @@ app2.get("/order-count", async (req, res) => {
     const shopifyAPIKey = process.env.SHOPIFY_API_KEY; // Your Admin API access token
 
     const response = await axios.get(
-      `https://oaksantum.myshopify.com/admin/api/2024-01/orders.json`,
+      `https://oaksantum.myshopify.com/admin/api/2025-01/orders.json`,
       {
         params: {
           status: "paid", // Only count paid orders
