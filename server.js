@@ -131,6 +131,42 @@ app.get("/order-count", async (req, res) => {
   }
 });
 
+// ratings stats
+app.get("/review-stats", async (req, res) => {
+  try {
+    const stats = await Review.aggregate([
+      {
+        $group: {
+          _id: "$rating",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Convert the aggregation result into a structured response
+    const totalReviews = stats.reduce((sum, item) => sum + item.count, 0);
+
+    const ratings = {
+      5: 0,
+      4: 0,
+      3: 0,
+      2: 0,
+      1: 0, // Default all ratings to 0
+    };
+
+    stats.forEach((item) => {
+      ratings[item._id] = item.count;
+    });
+
+    res.json({
+      totalReviews,
+      ratings,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch review statistics" });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
