@@ -102,22 +102,20 @@ app.post("/reviews/helpful", async (req, res) => {
 
 const axios = require("axios");
 
-const app2 = express();
-
 // New API route to fetch order count
-app2.get("/order-count", async (req, res) => {
+app.get("/order-count", async (req, res) => {
   try {
-    const shopifyStore = process.env.oaksantum; // Your Shopify store name (e.g., "myshop")
+    const shopifyStore = process.env.SHOPIFY_STORE; // Your Shopify store name (e.g., "myshop")
     const shopifyAPIKey = process.env.SHOPIFY_API_KEY; // Your Admin API access token
 
     const response = await axios.get(
-      `https://oaksantum.myshopify.com/admin/api/2025-01/orders.json`,
+      `https://${shopifyStore}.myshopify.com/admin/api/2024-01/orders.json`,
       {
         params: {
           status: "paid", // Only count paid orders
           created_at_min: new Date(
-            Date.now() - 24 * 60 * 60 * 1000
-          ).toISOString(), // Last 24 hours
+            Date.now() - 2 * 24 * 60 * 60 * 1000
+          ).toISOString(), // Last 48 hours
         },
         headers: {
           "X-Shopify-Access-Token": shopifyAPIKey,
