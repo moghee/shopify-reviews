@@ -169,4 +169,19 @@ app.get("/review-stats", async (req, res) => {
 
 // Start the server
 const PORT = process.env.PORT || 3000;
+
+// ✅ Prevent server from sleeping by pinging itself every 14 minutes
+setInterval(() => {
+  console.log("⏰ Waking up the server...");
+  axios
+    .get(`http://localhost:${PORT}/ping`)
+    .then(() => console.log("✅ Server is awake!"))
+    .catch((err) => console.error("❌ Error keeping server awake:", err));
+}, 14 * 60 * 1000); // 14 minutes in milliseconds
+
+// ✅ Add a simple ping route so the server can wake itself up
+app.get("/ping", (req, res) => {
+  res.json({ message: "Server is awake!" });
+});
+
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
