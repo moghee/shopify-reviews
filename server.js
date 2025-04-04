@@ -102,20 +102,34 @@ app.post("/reviews/helpful", async (req, res) => {
 
 const axios = require("axios");
 
-// New API route to fetch order count
+let lastRandomValue = null;
+let lastGeneratedDate = null;
+
+function getDailyRandomOffset() {
+  const today = new Date().toISOString().slice(0, 10); // e.g., '2025-04-04'
+
+  if (lastGeneratedDate !== today) {
+    lastRandomValue = Math.floor(Math.random() * 6) + 1; // random 1–6
+    lastGeneratedDate = today;
+    console.log("🔁 Generated new random offset:", lastRandomValue);
+  }
+
+  return lastRandomValue || 0;
+}
+
 app.get("/order-count", async (req, res) => {
   try {
-    const shopifyStore = process.env.SHOPIFY_STORE; // Your Shopify store name (e.g., "myshop")
-    const shopifyAPIKey = process.env.SHOPIFY_API_KEY; // Your Admin API access token
+    const shopifyStore = process.env.SHOPIFY_STORE;
+    const shopifyAPIKey = process.env.SHOPIFY_API_KEY;
 
     const response = await axios.get(
       `https://${shopifyStore}.myshopify.com/admin/api/2024-01/orders.json`,
       {
         params: {
-          status: "paid", // Only count paid orders
+          status: "paid",
           created_at_min: new Date(
             Date.now() - 2 * 24 * 60 * 60 * 1000
-          ).toISOString(), // Last 48 hours
+          ).toISOString(),
         },
         headers: {
           "X-Shopify-Access-Token": shopifyAPIKey,
@@ -123,8 +137,11 @@ app.get("/order-count", async (req, res) => {
       }
     );
 
-    // Return the count of orders from the last 24 hours
-    res.json({ count: response.data.orders.length });
+    const actualCount = response.data.orders.length;
+    const offset = getDailyRandomOffset();
+    const displayCount = actualCount + offset;
+
+    res.json({ count: displayCount });
   } catch (error) {
     console.error("Error fetching order count:", error);
     res.status(500).json({ error: "Failed to fetch order count" });
