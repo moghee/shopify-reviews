@@ -198,7 +198,8 @@ setInterval(() => {
 
 // ✅ Add a simple ping route so the server can wake itself up
 app.get("/ping", (req, res) => {
-  res.json({ message: "Server is awake!" });
+  console.log("Ping received at", new Date());
+  res.send("pong");
 });
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
